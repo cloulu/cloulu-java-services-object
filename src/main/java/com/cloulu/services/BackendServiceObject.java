@@ -2,7 +2,7 @@ package com.cloulu.services;
 
 import java.util.Map;
 
-public class BackEndServiceObject {
+public class BackendServiceObject {
 
 	private final String host = "host";
 	private final String port = "port";
@@ -14,7 +14,7 @@ public class BackEndServiceObject {
 	private Map<String,String> backEndServiceInfoMap;
 	
 
-	public BackEndServiceObject(Map<String, String> backEndServiceInfoMap) {
+	public BackendServiceObject(Map<String, String> backEndServiceInfoMap) {
 		super();
 		this.backEndServiceInfoMap = backEndServiceInfoMap;
 	}

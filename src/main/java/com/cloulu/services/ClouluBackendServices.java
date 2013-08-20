@@ -4,11 +4,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+public class ClouluBackendServices implements BackendServices {
 
-public class ClouluBackEndServices implements BackEndServices {
-
-	private Map<String, BackEndServiceObject> backEndServicesMap = new HashMap<String, BackEndServiceObject>();
+	private Map<String, BackendServiceObject> backendServicesMap = new HashMap<String, BackendServiceObject>();
+	private Properties backendServicesProperties;
 	private final String serviceKeyString = "\"credentials\":";
 
 	public void initBackEndServices(String servicesInfo) {
@@ -24,12 +25,13 @@ public class ClouluBackEndServices implements BackEndServices {
 				Map<String, String> backEndServiceInfoMap = new HashMap<String, String>();
 				backEndServiceInfoMap.put(labelString,
 						getExtractInfo(serviceInfo, "\"" + labelString + "\""));
-				String serviceCredentialsInfo = moveString(serviceInfo, serviceKeyString);
-				backEndServicesMap.put(
+				String serviceCredentialsInfo = moveString(serviceInfo,
+						serviceKeyString);
+				backendServicesMap.put(
 						key,
 						buildNextBackEnServiceObject(backEndServiceInfoMap,
 								serviceCredentialsInfo));
-				
+
 			}
 		}
 	}
@@ -39,26 +41,26 @@ public class ClouluBackEndServices implements BackEndServices {
 				+ findString.length());
 	}
 
-	private BackEndServiceObject buildNextBackEnServiceObject(
+	private BackendServiceObject buildNextBackEnServiceObject(
 			Map<String, String> backEndServiceInfoMap,
 			String serviceCredentialsInfo) {
 		String[] serviceCredentials = serviceCredentialsInfo.split(",");
 		for (String eachInfo : serviceCredentials) {
 			eachInfo = eachInfo.replaceAll("[\"\\]{}]", "");
-//			System.out.println("eachInfo = " + eachInfo);
+			// System.out.println("eachInfo = " + eachInfo);
 			String[] tempStrings = eachInfo.split(":");
 			String key = extractRealString(tempStrings[0]);
-//			System.out.println("key = " + key);
+			// System.out.println("key = " + key);
 			String value = extractRealString(tempStrings[1]);
-//			System.out.println("value = " + value);
+			// System.out.println("value = " + value);
 			backEndServiceInfoMap.put(key, value);
 		}
-		return new BackEndServiceObject(backEndServiceInfoMap);
+		return new BackendServiceObject(backEndServiceInfoMap);
 	}
 
 	private String extractRealString(String string) {
 		if (string.contains("\"")) {
-			string = string.substring(string.indexOf("\"")+1,
+			string = string.substring(string.indexOf("\"") + 1,
 					string.lastIndexOf("\""));
 		}
 		return string;
@@ -77,13 +79,40 @@ public class ClouluBackEndServices implements BackEndServices {
 				tempString.indexOf("\","));
 	}
 
-	public BackEndServiceObject getBackEndService(String serviceName) {
-		return backEndServicesMap.get(serviceName);
+	public BackendServiceObject getBackEndService(String serviceName) {
+		return backendServicesMap.get(serviceName);
 	}
 
 	public List<String> getServiceNamesList() {
-		return Arrays.asList(backEndServicesMap.keySet().toArray(
-				new String[backEndServicesMap.size()]));
+		return Arrays.asList(backendServicesMap.keySet().toArray(
+				new String[backendServicesMap.size()]));
+	}
+
+	public Properties getProperties() {
+		if (backendServicesProperties == null) {
+			backendServicesProperties = new Properties();
+		}
+		for (String serviceName : getServiceNamesList()) {
+			BackendServiceObject backEndServiceObject = getBackEndService(serviceName);
+			for (String key : backEndServiceObject.getKeys()) {
+				backendServicesProperties.setProperty(
+						getSystemPropertyKey(serviceName, key),
+						backEndServiceObject.getInfo(key));
+				System.out.println("Property Key : "
+						+ serviceName
+						+ "."
+						+ key
+						+ " = "
+						+ backendServicesProperties.getProperty(serviceName
+								+ "." + key));
+			}
+		}
+
+		return backendServicesProperties;
+	}
+
+	private String getSystemPropertyKey(String serviceName, String key) {
+		return serviceName + "." + key;
 	}
 
 }
