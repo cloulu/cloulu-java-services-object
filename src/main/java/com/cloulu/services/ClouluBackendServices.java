@@ -88,31 +88,4 @@ public class ClouluBackendServices implements BackendServices {
 				new String[backendServicesMap.size()]));
 	}
 
-	public Properties getProperties() {
-		if (backendServicesProperties == null) {
-			backendServicesProperties = new Properties();
-		}
-		for (String serviceName : getServiceNamesList()) {
-			BackendServiceObject backEndServiceObject = getBackEndService(serviceName);
-			for (String key : backEndServiceObject.getKeys()) {
-				backendServicesProperties.setProperty(
-						getSystemPropertyKey(serviceName, key),
-						backEndServiceObject.getInfo(key));
-				System.out.println("Property Key : "
-						+ serviceName
-						+ "."
-						+ key
-						+ " = "
-						+ backendServicesProperties.getProperty(serviceName
-								+ "." + key));
-			}
-		}
-
-		return backendServicesProperties;
-	}
-
-	private String getSystemPropertyKey(String serviceName, String key) {
-		return serviceName + "." + key;
-	}
-
 }
