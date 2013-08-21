@@ -8,11 +8,20 @@ import java.util.Properties;
 
 public class ClouluBackendServices implements BackendServices {
 
+	public ClouluBackendServices(String servicesInfo) {
+		initBackendServices(servicesInfo);
+	}
+
+	public ClouluBackendServices() {
+		initBackendServices(System.getenv("VCAP_SERVICES"));
+	}
+
+	private String servicesInfo;
 	private Map<String, BackendServiceObject> backendServicesMap = new HashMap<String, BackendServiceObject>();
 	private Properties backendServicesProperties;
 	private final String serviceKeyString = "\"credentials\":";
 
-	public void initBackEndServices(String servicesInfo) {
+	private void initBackendServices(String servicesInfo) {
 		String[] eachServiceTypeInfos = servicesInfo.split("}],");
 		for (String sameServicesInfo : eachServiceTypeInfos) {
 			sameServicesInfo = sameServicesInfo.substring(sameServicesInfo
@@ -86,6 +95,21 @@ public class ClouluBackendServices implements BackendServices {
 	public List<String> getServiceNamesList() {
 		return Arrays.asList(backendServicesMap.keySet().toArray(
 				new String[backendServicesMap.size()]));
+	}
+
+	public Properties getBackendServicesProperties() {
+		backendServicesProperties = new Properties();
+		for (String serviceName : getServiceNamesList()) {
+			BackendServiceObject backEndServiceObject = getBackEndService(serviceName);
+			for (String key : backEndServiceObject.getKeys()) {
+				backendServicesProperties.setProperty(getSystemPropertyKey(serviceName,key), backEndServiceObject.getInfo(key));
+			}
+		}
+		return backendServicesProperties;
+	}
+	
+	private String getSystemPropertyKey(String serviceName, String key) {
+		return serviceName+"."+key;
 	}
 
 }
