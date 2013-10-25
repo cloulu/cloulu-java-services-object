@@ -16,12 +16,14 @@ public class ClouluBackendServices implements BackendServices {
 		initBackendServices(System.getenv("VCAP_SERVICES"));
 	}
 
-	private String servicesInfo;
 	private Map<String, BackendServiceObject> backendServicesMap = new HashMap<String, BackendServiceObject>();
 	private Properties backendServicesProperties;
 	private final String serviceKeyString = "\"credentials\":";
 
 	private void initBackendServices(String servicesInfo) {
+		if(servicesInfo==null||servicesInfo.equals("")||!servicesInfo.contains(serviceKeyString)){
+			return;
+		}
 		String[] eachServiceTypeInfos = servicesInfo.split("}],");
 		for (String sameServicesInfo : eachServiceTypeInfos) {
 			sameServicesInfo = sameServicesInfo.substring(sameServicesInfo

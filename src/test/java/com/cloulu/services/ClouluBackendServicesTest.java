@@ -78,6 +78,40 @@ public class ClouluBackendServicesTest {
 	}
 	
 	@Test
+	public final void testCustomNull() {
+		String servicesInfo = null;				
+		backEndServices = new ClouluBackendServices(servicesInfo);
+		List<String> serviceNamesList = backEndServices.getServiceNamesList();
+		for (String serviceName : serviceNamesList) {
+			System.out.println("Service Name : " + serviceName);
+			BackendServiceObject backEndServiceObject = backEndServices
+					.getBackEndService(serviceName);
+			for (String key : backEndServiceObject.getKeys()) {
+				System.out.println("System Property Key : " + key + " = "
+						+ backEndServiceObject.getInfo(key));
+
+			}
+		}
+	}
+	
+	@Test
+	public final void testCustomEmpty() {
+		String servicesInfo = "";				
+		backEndServices = new ClouluBackendServices(servicesInfo);
+		List<String> serviceNamesList = backEndServices.getServiceNamesList();
+		for (String serviceName : serviceNamesList) {
+			System.out.println("Service Name : " + serviceName);
+			BackendServiceObject backEndServiceObject = backEndServices
+					.getBackEndService(serviceName);
+			for (String key : backEndServiceObject.getKeys()) {
+				System.out.println("System Property Key : " + key + " = "
+						+ backEndServiceObject.getInfo(key));
+
+			}
+		}
+	}
+	
+	@Test
 	public final void testGetProperties() {
 		Properties clProperties = backEndServices.getBackendServicesProperties();
 		assertEquals(clProperties.getProperty("mypostgresqldb.name"),
